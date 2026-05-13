@@ -3,7 +3,7 @@ yamlname: Deploy to Firebase Hosting
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build_and_deploy:
