@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>駕駛111樹洞</title>
+<title>駕駛樹洞</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -373,7 +373,7 @@
     <div class="header-icon">🌳</div>
     <div>
       <h1>駕駛樹洞</h1>
-      <p>你說的，我們都認真在看</p>
+      <p>你的心聲，我們都會聽見</p>
     </div>
   </div>
 
@@ -493,7 +493,7 @@
           <div class="cat-emoji">💡</div>
           <div class="cat-text">
             <div class="cat-title">其他問題或建議</div>
-            <div class="cat-sub">排班安排、任何讓整體更好的想法</div>
+            <div class="cat-sub">任何讓整體更好的想法都歡迎提出</div>
           </div>
           <div class="cat-radio"></div>
         </div>
@@ -522,8 +522,8 @@
     <!-- 成功畫面 -->
     <div class="success-screen" id="successScreen">
       <div class="success-tree">🌳</div>
-      <h2>已送出，謝謝你！</h2>
-      <p>你的回饋已經記錄下來了。<br>我們會認真處理每一則反映，<br>謝謝你每天在第一線的付出。</p>
+      <h2>已送出，謝謝您！</h2>
+      <p>您的回饋我們收到了。<br>我們會認真處理每一則回饋，<br>謝謝您每天在第一線的付出。</p>
       <button class="success-again" onclick="resetApp()">再填一次</button>
     </div>
 
@@ -620,11 +620,11 @@
     el.classList.add('selected');
     selectedCatName = name;
     const placeholders = {
-      '路線狀況反應': '例如：XX路段每天早上8點很塞，建議可以改走...',
-      '乘客狀況反應': '例如：今天有乘客攜帶大型行李，擋住了走道...',
-      '設備問題反映': '例如：第三站播報器播到第四站的內容，需要更新...',
+      '路線狀況反應': '例如：後昌路正在施工車道縮減，建議可以改走...',
+      '乘客狀況反應': '例如：今天有乘客遺留早餐垃圾，時間為7:15...',
+      '設備問題反映': '例如：車輛抵達臨辦前又沒有播報的聲音了...',
       '駕駛心情分享': '今天辛苦了，有什麼想說的都可以放這裡...',
-      '其他問題或建議': '例如：建議可以調整某個班次的發車時間，因為...'
+      '其他問題或建議': '例如：早上十點排隊的人很多都載不完!'
     };
     document.getElementById('mainText').placeholder = placeholders[name] || '請輸入內容...';
     document.getElementById('step2Label').textContent = 'Step 3 · ' + name;
