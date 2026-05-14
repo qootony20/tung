@@ -387,7 +387,15 @@
 
     <!-- Step 0: 路線 -->
     <div class="section" id="step0">
-      <p class="section-title">Step 1 · 選擇路線</p>
+      <div class="input-group" style="margin-bottom:1.5rem;">
+        <div class="sub=label">司機姓名</div
+        <input type="text" id="driverName" placeholder="請輸入您的大名"
+        style="width:100%;padding:12px 14px;font-size:15px;font-family:'Noto Sans TC',
+          sans=serif;border=radius:8px;border:1.5px solid #E0DED8;outline:none;color:#1a1a18;"
+          onfocus="this.style.borderColor='#1D9E75'"
+          onblur="this.style.borderColor='#E0DED8'">
+      </div>
+            <p class="section-title">Step 1 · 選擇路線</p>
 
       <div class="option-list">
         <div class="option-card" onclick="selectRoute(this,'F22捷運接駁車','bus')">
@@ -632,7 +640,9 @@
 
   function goNext() {
     if (currentStep === 0) {
-      if (!selectedRoute) { showToast('請先選擇路線'); return; }
+      const driverName =  document.getElementById('driverName').value.trim();
+      if(!driverName){showToast('請輸入司機姓名');return;}
+        if (!selectedRoute) { showToast('請先選擇路線'); return; }
       if (selectedRouteType === 'bus') {
         const v = document.getElementById('busPlate').value;
         if (!v) { showToast('請選擇車牌'); return; }
@@ -665,6 +675,7 @@
 
     const data = {
       路線: selectedRoute,
+      司機姓名: driverName,
       車牌或班次: selectedVehicle,
       類別: selectedCatName,
       內容: text,
