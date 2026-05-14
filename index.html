@@ -1,4 +1,862 @@
 <!DOCTYPE html>
+
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>駕駛樹洞</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1D9E75;
+    --green-light: #E1F5EE;
+    --green-dark: #085041;
+    --green-mid: #0F6E56;
+    --gray-bg: #F7F7F5;
+    --gray-border: #E0DED8;
+    --gray-text: #888780;
+    --text: #1a1a18;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+- { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+font-family: ‘Noto Sans TC’, sans-serif;
+background: var(–gray-bg);
+min-height: 100vh;
+color: var(–text);
+}
+
+.app {
+max-width: 480px;
+margin: 0 auto;
+min-height: 100vh;
+background: white;
+display: flex;
+flex-direction: column;
+padding-bottom: 80px;
+}
+
+.header {
+background: var(–green);
+padding: 1.25rem 1.5rem 1rem;
+display: flex;
+align-items: center;
+gap: 12px;
+position: sticky;
+top: 0;
+z-index: 10;
+}
+.header-icon {
+width: 36px; height: 36px;
+background: rgba(255,255,255,0.2);
+border-radius: 50%;
+display: flex; align-items: center; justify-content: center;
+font-size: 18px;
+}
+.header h1 { font-size: 18px; font-weight: 700; color: white; letter-spacing: 0.5px; }
+.header p { font-size: 12px; color: rgba(255,255,255,0.75); margin-top: 1px; }
+
+.stepbar {
+display: flex;
+background: var(–green-dark);
+}
+.stepbar-item {
+flex: 1;
+height: 3px;
+background: rgba(255,255,255,0.2);
+transition: background 0.4s;
+}
+.stepbar-item.active { background: rgba(255,255,255,0.6); }
+.stepbar-item.done { background: white; }
+
+.content { padding: 1.5rem; }
+
+.section { display: none; animation: fadeIn 0.25s ease; }
+.section.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.section-title {
+font-size: 12px;
+font-weight: 700;
+color: var(–gray-text);
+letter-spacing: 1px;
+text-transform: uppercase;
+margin-bottom: 1.25rem;
+}
+
+.option-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.5rem; }
+
+.option-card {
+border: 1.5px solid var(–gray-border);
+border-radius: var(–radius);
+padding: 1rem 1.25rem;
+cursor: pointer;
+transition: all 0.18s;
+display: flex;
+align-items: center;
+gap: 12px;
+background: white;
+}
+.option-card:active { transform: scale(0.98); }
+.option-card.selected { border-color: var(–green); background: var(–green-light); }
+.option-card.selected .option-icon { background: var(–green); }
+.option-icon {
+width: 40px; height: 40px;
+border-radius: 10px;
+background: var(–gray-bg);
+display: flex; align-items: center; justify-content: center;
+font-size: 20px;
+flex-shrink: 0;
+transition: background 0.18s;
+}
+.option-text { flex: 1; }
+.option-title { font-size: 15px; font-weight: 500; }
+.option-sub { font-size: 12px; color: var(–gray-text); margin-top: 2px; }
+.option-check {
+width: 22px; height: 22px;
+border-radius: 50%;
+border: 1.5px solid var(–gray-border);
+display: flex; align-items: center; justify-content: center;
+font-size: 12px;
+color: transparent;
+transition: all 0.18s;
+flex-shrink: 0;
+}
+.option-card.selected .option-check {
+background: var(–green);
+border-color: var(–green);
+color: white;
+}
+
+.sub-select-wrap {
+display: none;
+margin-top: -0.75rem;
+margin-bottom: 1.5rem;
+animation: fadeIn 0.2s ease;
+}
+.sub-select-wrap.visible { display: block; }
+.sub-label { font-size: 13px; color: var(–gray-text); margin-bottom: 8px; font-weight: 500; }
+
+select {
+width: 100%;
+padding: 12px 40px 12px 14px;
+border-radius: var(–radius-sm);
+border: 1.5px solid var(–gray-border);
+font-size: 15px;
+font-family: ‘Noto Sans TC’, sans-serif;
+color: var(–text);
+background: white;
+appearance: none;
+background-image: url(“data:image/svg+xml,%3Csvg xmlns=‘http://www.w3.org/2000/svg’ width=‘16’ height=‘16’ viewBox=‘0 0 24 24’ fill=‘none’ stroke=’%23888780’ stroke-width=‘2’%3E%3Cpath d=‘M6 9l6 6 6-6’/%3E%3C/svg%3E”);
+background-repeat: no-repeat;
+background-position: right 12px center;
+cursor: pointer;
+}
+select:focus { outline: none; border-color: var(–green); }
+
+.cat-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.5rem; }
+
+.cat-card {
+border: 1.5px solid var(–gray-border);
+border-radius: var(–radius);
+padding: 1rem 1.25rem;
+cursor: pointer;
+transition: all 0.18s;
+display: flex;
+align-items: flex-start;
+gap: 12px;
+background: white;
+}
+.cat-card:active { transform: scale(0.98); }
+.cat-card.selected { border-color: var(–green); background: var(–green-light); }
+.cat-emoji { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+.cat-text { flex: 1; }
+.cat-title { font-size: 14px; font-weight: 500; }
+.cat-sub { font-size: 12px; color: var(–gray-text); margin-top: 3px; line-height: 1.5; }
+.cat-radio {
+width: 20px; height: 20px;
+border-radius: 50%;
+border: 1.5px solid var(–gray-border);
+flex-shrink: 0;
+margin-top: 2px;
+transition: all 0.18s;
+display: flex; align-items: center; justify-content: center;
+}
+.cat-radio::after {
+content: ‘’;
+width: 8px; height: 8px;
+border-radius: 50%;
+background: white;
+opacity: 0;
+transition: opacity 0.18s;
+}
+.cat-card.selected .cat-radio { background: var(–green); border-color: var(–green); }
+.cat-card.selected .cat-radio::after { opacity: 1; }
+
+.input-group { margin-bottom: 1.25rem; }
+
+.voice-text-box {
+border: 1.5px solid var(–gray-border);
+border-radius: var(–radius);
+overflow: hidden;
+background: white;
+transition: border-color 0.2s;
+}
+.voice-text-box:focus-within { border-color: var(–green); }
+
+textarea {
+width: 100%;
+padding: 14px;
+font-size: 15px;
+font-family: ‘Noto Sans TC’, sans-serif;
+color: var(–text);
+border: none;
+outline: none;
+resize: none;
+min-height: 140px;
+line-height: 1.7;
+background: transparent;
+}
+textarea::placeholder { color: #c0bdb5; }
+
+.voice-bar {
+display: flex;
+align-items: center;
+gap: 8px;
+padding: 8px 12px;
+border-top: 1px solid var(–gray-border);
+background: var(–gray-bg);
+}
+.voice-btn {
+display: flex; align-items: center; gap: 6px;
+padding: 7px 14px;
+border-radius: 20px;
+border: 1.5px solid var(–gray-border);
+background: white;
+font-size: 13px;
+font-family: ‘Noto Sans TC’, sans-serif;
+color: var(–gray-text);
+cursor: pointer;
+transition: all 0.2s;
+}
+.voice-btn:hover { border-color: var(–green); color: var(–green); }
+.voice-btn.recording {
+background: #fee2e2;
+border-color: #ef4444;
+color: #ef4444;
+animation: pulse 1.2s infinite;
+}
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+.char-count { margin-left: auto; font-size: 12px; color: var(–gray-text); }
+
+.voice-hint {
+font-size: 12px;
+color: var(–gray-text);
+margin-top: 8px;
+padding: 0 2px;
+line-height: 1.5;
+display: none;
+}
+
+.bottom-nav {
+position: fixed;
+bottom: 0;
+left: 0; right: 0;
+max-width: 480px;
+margin: 0 auto;
+padding: 0.875rem 1.5rem;
+display: flex;
+gap: 10px;
+background: white;
+border-top: 1px solid var(–gray-border);
+z-index: 20;
+}
+
+.btn {
+flex: 1;
+padding: 14px;
+border-radius: var(–radius-sm);
+font-size: 15px;
+font-weight: 500;
+font-family: ‘Noto Sans TC’, sans-serif;
+cursor: pointer;
+transition: all 0.18s;
+border: 1.5px solid var(–gray-border);
+background: white;
+color: var(–text);
+}
+.btn:active { transform: scale(0.97); }
+.btn.back { flex: 0 0 auto; padding: 14px 20px; color: var(–gray-text); }
+.btn.primary {
+background: var(–green);
+border-color: var(–green);
+color: white;
+}
+.btn.primary:active { background: var(–green-mid); }
+
+.warning-screen {
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+padding: 2.5rem 1.5rem;
+text-align: center;
+min-height: 100vh;
+background: white;
+}
+.warning-icon { font-size: 56px; margin-bottom: 1.25rem; }
+.warning-screen h2 { font-size: 20px; font-weight: 700; color: #1a1a18; margin-bottom: 0.75rem; }
+.warning-screen p { font-size: 14px; color: var(–gray-text); line-height: 1.8; margin-bottom: 2rem; }
+.warning-badge {
+background: #FEF3C7;
+border: 1.5px solid #F59E0B;
+border-radius: var(–radius);
+padding: 1rem 1.25rem;
+margin-bottom: 2rem;
+width: 100%;
+}
+.warning-badge p { color: #92400E; font-size: 14px; font-weight: 500; margin: 0; line-height: 1.7; }
+.warning-confirm-btn {
+width: 100%;
+padding: 14px;
+border-radius: var(–radius-sm);
+background: var(–green);
+border: none;
+color: white;
+font-size: 15px;
+font-weight: 500;
+font-family: ‘Noto Sans TC’, sans-serif;
+cursor: pointer;
+transition: background 0.2s;
+}
+.warning-confirm-btn:active { background: var(–green-mid); }
+
+.success-screen {
+display: none;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+padding: 3rem 2rem;
+text-align: center;
+min-height: 80vh;
+animation: fadeIn 0.4s ease;
+}
+.success-screen.show { display: flex; }
+.success-tree { font-size: 72px; margin-bottom: 1.5rem; }
+.success-screen h2 { font-size: 22px; font-weight: 700; margin-bottom: 0.75rem; }
+.success-screen p { font-size: 14px; color: var(–gray-text); line-height: 1.9; }
+.success-again {
+margin-top: 2rem;
+padding: 12px 28px;
+border-radius: var(–radius-sm);
+border: 1.5px solid var(–gray-border);
+background: white;
+font-size: 14px;
+font-family: ‘Noto Sans TC’, sans-serif;
+cursor: pointer;
+color: var(–text);
+}
+
+.toast {
+position: fixed;
+bottom: 90px;
+left: 50%;
+transform: translateX(-50%) translateY(10px);
+background: #1a1a18;
+color: white;
+padding: 10px 20px;
+border-radius: 20px;
+font-size: 13px;
+opacity: 0;
+transition: all 0.25s;
+pointer-events: none;
+white-space: nowrap;
+z-index: 100;
+font-family: ‘Noto Sans TC’, sans-serif;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.loading {
+display: none;
+position: fixed; inset: 0;
+background: rgba(255,255,255,0.88);
+align-items: center;
+justify-content: center;
+z-index: 200;
+flex-direction: column;
+gap: 14px;
+}
+.loading.show { display: flex; }
+.spinner {
+width: 36px; height: 36px;
+border: 3px solid var(–gray-border);
+border-top-color: var(–green);
+border-radius: 50%;
+animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading p { font-size: 14px; color: var(–gray-text); font-family: ‘Noto Sans TC’, sans-serif; }
+</style>
+
+</head>
+<body>
+
+<!-- 警示畫面 -->
+
+<div class="warning-screen" id="warningScreen">
+  <div class="warning-icon">🚌</div>
+  <h2>駕駛樹洞</h2>
+  <p>感謝你撥空填寫回饋，<br>你的每一則意見都很重要！</p>
+  <div class="warning-badge">
+    <p>⚠️ 請務必在車輛停妥、<br>安全停靠後再填寫表單。<br>請勿於行車中操作此頁面。</p>
+  </div>
+  <button class="warning-confirm-btn" onclick="startForm()">
+    我已停車，開始填寫 →
+  </button>
+</div>
+
+<div class="app" id="app" style="display:none;">
+
+  <div class="header">
+    <div class="header-icon">🌳</div>
+    <div>
+      <h1>駕駛樹洞</h1>
+      <p>你說的，我們都認真在看</p>
+    </div>
+  </div>
+
+  <div class="stepbar">
+    <div class="stepbar-item" id="bar0"></div>
+    <div class="stepbar-item" id="bar1"></div>
+    <div class="stepbar-item" id="bar2"></div>
+  </div>
+
+  <div class="content">
+
+```
+<!-- Step 0: 路線 -->
+<div class="section" id="step0">
+  <p class="section-title">Step 1 · 基本資料</p>
+
+  <div class="input-group" style="margin-bottom:1.5rem;">
+    <div class="sub-label" style="font-size:13px; color:var(--gray-text); margin-bottom:8px; font-weight:500;">司機姓名</div>
+    <input type="text" id="driverName" placeholder="請輸入您的姓名"
+      style="width:100%; padding:12px 14px; font-size:15px;
+      font-family:'Noto Sans TC',sans-serif; border-radius:8px;
+      border:1.5px solid #E0DED8; outline:none; color:#1a1a18; background:white;"
+      onfocus="this.style.borderColor='#1D9E75'"
+      onblur="this.style.borderColor='#E0DED8'">
+  </div>
+
+  <div class="sub-label" style="font-size:13px; color:var(--gray-text); margin-bottom:8px; font-weight:500;">選擇路線</div>
+  <div class="option-list">
+    <div class="option-card" onclick="selectRoute(this,'F22捷運接駁車','bus')">
+      <div class="option-icon">🚌</div>
+      <div class="option-text">
+        <div class="option-title">F22 捷運接駁車</div>
+        <div class="option-sub">選擇後請指定車牌</div>
+      </div>
+      <div class="option-check">✓</div>
+    </div>
+    <div class="option-card" onclick="selectRoute(this,'F22夜間計程車','taxi')">
+      <div class="option-icon">🚕</div>
+      <div class="option-text">
+        <div class="option-title">F22 夜間計程車</div>
+        <div class="option-sub">無需選擇車牌</div>
+      </div>
+      <div class="option-check">✓</div>
+    </div>
+    <div class="option-card" onclick="selectRoute(this,'F22四班二輪交通車','shuttle')">
+      <div class="option-icon">🚐</div>
+      <div class="option-text">
+        <div class="option-title">F22 四班二輪交通車</div>
+        <div class="option-sub">選擇後請指定班次路線</div>
+      </div>
+      <div class="option-check">✓</div>
+    </div>
+    <div class="option-card" onclick="selectRoute(this,'其他路線','other')">
+      <div class="option-icon">🗺️</div>
+      <div class="option-text">
+        <div class="option-title">其他路線</div>
+        <div class="option-sub">無需選擇車牌</div>
+      </div>
+      <div class="option-check">✓</div>
+    </div>
+  </div>
+
+  <div class="sub-select-wrap" id="busWrap">
+    <div class="sub-label">選擇車牌</div>
+    <select id="busPlate">
+      <option value="">— 請選擇車牌 —</option>
+      <option>KAB-9300</option>
+      <option>KAA-1327</option>
+      <option>KAB-9202</option>
+      <option>KAB-9107</option>
+      <option>KAB-9152</option>
+      <option>KAA-9975</option>
+      <option>KAA-9802</option>
+      <option>KAA-1100</option>
+    </select>
+  </div>
+
+  <div class="sub-select-wrap" id="shuttleWrap">
+    <div class="sub-label">選擇班次路線</div>
+    <select id="shuttleRoute">
+      <option value="">— 請選擇班次路線 —</option>
+      <option>大寮鳳山線</option>
+      <option>前鎮小港線</option>
+      <option>屏東鳥松線</option>
+      <option>南區路竹線</option>
+      <option>永康仁德線</option>
+    </select>
+  </div>
+</div>
+
+<!-- Step 1: 反映類別 -->
+<div class="section" id="step1">
+  <p class="section-title">Step 2 · 反映類別</p>
+
+  <div class="cat-grid">
+    <div class="cat-card" onclick="selectCat(this,'路線狀況反應')">
+      <div class="cat-emoji">🚧</div>
+      <div class="cat-text">
+        <div class="cat-title">路線狀況反應</div>
+        <div class="cat-sub">施工路段、容易塞車的時間與地點、希望改道的建議</div>
+      </div>
+      <div class="cat-radio"></div>
+    </div>
+    <div class="cat-card" onclick="selectCat(this,'乘客狀況反應')">
+      <div class="cat-emoji">🧍</div>
+      <div class="cat-text">
+        <div class="cat-title">乘客狀況反應</div>
+        <div class="cat-sub">攜帶危險物品、插隊、亂丟垃圾等乘客行為問題</div>
+      </div>
+      <div class="cat-radio"></div>
+    </div>
+    <div class="cat-card" onclick="selectCat(this,'設備問題反映')">
+      <div class="cat-emoji">📢</div>
+      <div class="cat-text">
+        <div class="cat-title">設備問題反映</div>
+        <div class="cat-sub">播報器故障、播報內容不準確、車內設備異常</div>
+      </div>
+      <div class="cat-radio"></div>
+    </div>
+    <div class="cat-card" onclick="selectCat(this,'駕駛心情分享')">
+      <div class="cat-emoji">💬</div>
+      <div class="cat-text">
+        <div class="cat-title">駕駛心情分享</div>
+        <div class="cat-sub">今天辛苦了，有什麼想說的都可以放這裡</div>
+      </div>
+      <div class="cat-radio"></div>
+    </div>
+    <div class="cat-card" onclick="selectCat(this,'其他問題或建議')">
+      <div class="cat-emoji">💡</div>
+      <div class="cat-text">
+        <div class="cat-title">其他問題或建議</div>
+        <div class="cat-sub">排班安排、任何讓整體更好的想法</div>
+      </div>
+      <div class="cat-radio"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Step 2: 內容輸入 -->
+<div class="section" id="step2">
+  <p class="section-title" id="step2Label">Step 3 · 說說看</p>
+
+  <div class="input-group">
+    <div class="voice-text-box">
+      <textarea id="mainText" placeholder="請輸入你想反映的內容..." maxlength="500" oninput="updateCount()"></textarea>
+      <div class="voice-bar">
+        <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()">
+          🎙️ 語音輸入
+        </button>
+        <span class="char-count"><span id="charCount">0</span> / 500</span>
+      </div>
+    </div>
+    <div class="voice-hint" id="voiceHint">⚠️ 此裝置不支援語音輸入，請直接打字</div>
+    <div class="voice-hint" id="voiceStatus" style="color:#ef4444;">🔴 錄音中，再按一次停止...</div>
+  </div>
+</div>
+
+<!-- 成功畫面 -->
+<div class="success-screen" id="successScreen">
+  <div class="success-tree">🌳</div>
+  <h2>已送出，謝謝你！</h2>
+  <p>你的回饋已經記錄下來了。<br>我們會認真處理每一則反映，<br>謝謝你每天在第一線的付出。</p>
+  <button class="success-again" onclick="resetApp()">再填一次</button>
+</div>
+```
+
+  </div>
+</div>
+
+<!-- Bottom nav -->
+
+<div class="bottom-nav" id="bottomNav">
+  <button class="btn back" id="backBtn" onclick="goBack()" style="display:none;">← 返回</button>
+  <button class="btn primary" id="nextBtn" onclick="goNext()">下一步 →</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="loading" id="loading">
+  <div class="spinner"></div>
+  <p>送出中...</p>
+</div>
+
+<!-- Firebase SDK -->
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  // ============================================================
+  // 🔧 將你的 Firebase 設定貼在下方（取代每個 YOUR_... 的值）
+  // ============================================================
+  const firebaseConfig = {
+    apiKey: "AIzaSyDMIOCiYfbfdcg1QNeUaQNSBasTTUfcSSc",
+    authDomain: "tsmc-treehouse.firebaseapp.com",
+    projectId: "tsmc-treehouse",
+    storageBucket: "tsmc-treehouse.firebasestorage.app",
+    messagingSenderId: "991166473726",
+    appId: "1:991166473726:web:dec3b8a39e3c3f3d180caf"
+  };
+  // ============================================================
+
+  const fbApp = initializeApp(firebaseConfig);
+  const db = getFirestore(fbApp);
+
+  window._db = db;
+  window._addDoc = addDoc;
+  window._collection = collection;
+  window._serverTimestamp = serverTimestamp;
+</script>
+
+<script>
+  let currentStep = 0;
+  let selectedRoute = '';
+  let selectedRouteType = '';
+  let selectedVehicle = '';
+  let selectedCatName = '';
+  let recognition = null;
+  let isRecording = false;
+  let finalTranscript = '';
+
+  function updateStepBar() {
+    for (let i = 0; i < 3; i++) {
+      const bar = document.getElementById('bar' + i);
+      bar.className = 'stepbar-item';
+      if (i < currentStep) bar.classList.add('done');
+      else if (i === currentStep) bar.classList.add('active');
+    }
+  }
+
+  function showStep(n) {
+    for (let i = 0; i < 3; i++) {
+      const el = document.getElementById('step' + i);
+      if (el) el.classList.toggle('active', i === n);
+    }
+    document.getElementById('successScreen').classList.remove('show');
+    document.getElementById('bottomNav').style.display = 'flex';
+    document.getElementById('backBtn').style.display = n > 0 ? 'inline-flex' : 'none';
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.textContent = n === 2 ? '送出回饋 🌳' : '下一步 →';
+    currentStep = n;
+    updateStepBar();
+    window.scrollTo(0, 0);
+  }
+
+  function selectRoute(el, name, type) {
+    document.querySelectorAll('#step0 .option-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedRoute = name;
+    selectedRouteType = type;
+    document.getElementById('busWrap').classList.remove('visible');
+    document.getElementById('shuttleWrap').classList.remove('visible');
+    if (type === 'bus') document.getElementById('busWrap').classList.add('visible');
+    if (type === 'shuttle') document.getElementById('shuttleWrap').classList.add('visible');
+  }
+
+  function selectCat(el, name) {
+    document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedCatName = name;
+    const placeholders = {
+      '路線狀況反應': '例如：XX路段每天早上8點很塞，建議可以改走...',
+      '乘客狀況反應': '例如：今天有乘客攜帶大型行李，擋住了走道...',
+      '設備問題反映': '例如：第三站播報器播到第四站的內容，需要更新...',
+      '駕駛心情分享': '今天辛苦了，有什麼想說的都可以放這裡...',
+      '其他問題或建議': '例如：建議可以調整某個班次的發車時間，因為...'
+    };
+    document.getElementById('mainText').placeholder = placeholders[name] || '請輸入內容...';
+    document.getElementById('step2Label').textContent = 'Step 3 · ' + name;
+  }
+
+  function startForm() {
+    document.getElementById('warningScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    document.getElementById('bottomNav').style.display = 'flex';
+    showStep(0);
+  }
+
+  function goNext() {
+    if (currentStep === 0) {
+      const driverName = document.getElementById('driverName').value.trim();
+      if (!driverName) { showToast('請輸入司機姓名'); return; }
+      if (!selectedRoute) { showToast('請先選擇路線'); return; }
+      if (selectedRouteType === 'bus') {
+        const v = document.getElementById('busPlate').value;
+        if (!v) { showToast('請選擇車牌'); return; }
+        selectedVehicle = v;
+      } else if (selectedRouteType === 'shuttle') {
+        const v = document.getElementById('shuttleRoute').value;
+        if (!v) { showToast('請選擇班次路線'); return; }
+        selectedVehicle = v;
+      } else {
+        selectedVehicle = '—';
+      }
+      showStep(1);
+    } else if (currentStep === 1) {
+      if (!selectedCatName) { showToast('請選擇反映類別'); return; }
+      showStep(2);
+    } else if (currentStep === 2) {
+      const text = document.getElementById('mainText').value.trim();
+      if (!text) { showToast('請輸入反映內容'); return; }
+      submitForm(text);
+    }
+  }
+
+  function goBack() {
+    if (currentStep > 0) showStep(currentStep - 1);
+  }
+
+  async function submitForm(text) {
+    const loading = document.getElementById('loading');
+    loading.classList.add('show');
+
+    const data = {
+      司機姓名: document.getElementById('driverName').value.trim(),
+      路線: selectedRoute,
+      車牌或班次: selectedVehicle,
+      類別: selectedCatName,
+      內容: text,
+      送出時間: window._serverTimestamp ? window._serverTimestamp() : new Date().toISOString()
+    };
+
+    try {
+      if (window._db && window._addDoc && window._collection) {
+        await window._addDoc(window._collection(window._db, 'feedbacks'), data);
+      } else {
+        await new Promise(r => setTimeout(r, 800));
+        console.log('Firebase 未設定，模擬送出：', data);
+      }
+      loading.classList.remove('show');
+      document.getElementById('bottomNav').style.display = 'none';
+      for (let i = 0; i < 3; i++) {
+        const el = document.getElementById('step' + i);
+        if (el) el.classList.remove('active');
+      }
+      document.getElementById('successScreen').classList.add('show');
+      updateStepBar();
+    } catch (e) {
+      loading.classList.remove('show');
+      console.error(e);
+      showToast('送出失敗，請稍後再試');
+    }
+  }
+
+  function resetApp() {
+    selectedRoute = '';
+    selectedRouteType = '';
+    selectedVehicle = '';
+    selectedCatName = '';
+    document.getElementById('driverName').value = '';
+    document.querySelectorAll('.option-card, .cat-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('busWrap').classList.remove('visible');
+    document.getElementById('shuttleWrap').classList.remove('visible');
+    document.getElementById('busPlate').value = '';
+    document.getElementById('shuttleRoute').value = '';
+    document.getElementById('mainText').value = '';
+    document.getElementById('charCount').textContent = '0';
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('bottomNav').style.display = 'none';
+    document.getElementById('warningScreen').style.display = 'flex';
+  }
+
+  function updateCount() {
+    document.getElementById('charCount').textContent = document.getElementById('mainText').value.length;
+  }
+
+  function toggleVoice() {
+    const SpeechAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechAPI) {
+      document.getElementById('voiceHint').style.display = 'block';
+      return;
+    }
+    if (isRecording) {
+      recognition.stop();
+      return;
+    }
+    recognition = new SpeechAPI();
+    recognition.lang = 'zh-TW';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    finalTranscript = document.getElementById('mainText').value;
+
+    const btn = document.getElementById('voiceBtn');
+    const status = document.getElementById('voiceStatus');
+
+    recognition.onstart = () => {
+      isRecording = true;
+      btn.classList.add('recording');
+      btn.textContent = '⏹ 停止錄音';
+      status.style.display = 'block';
+    };
+    recognition.onresult = (e) => {
+      let interim = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) finalTranscript += e.results[i][0].transcript;
+        else interim = e.results[i][0].transcript;
+      }
+      document.getElementById('mainText').value = finalTranscript + interim;
+      updateCount();
+    };
+    recognition.onend = () => {
+      isRecording = false;
+      document.getElementById('mainText').value = finalTranscript;
+      btn.classList.remove('recording');
+      btn.textContent = '🎙️ 語音輸入';
+      status.style.display = 'none';
+      updateCount();
+    };
+    recognition.onerror = () => {
+      isRecording = false;
+      btn.classList.remove('recording');
+      btn.textContent = '🎙️ 語音輸入';
+      status.style.display = 'none';
+      showToast('語音辨識失敗，請直接打字');
+    };
+    recognition.start();
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  document.getElementById('bottomNav').style.display = 'none';
+</script>
+
+</body>
+</html><!DOCTYPE html>
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
