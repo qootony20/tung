@@ -526,7 +526,7 @@ animation: spin 0.8s linear infinite;
       <div class="cat-emoji">🚧</div>
       <div class="cat-text">
         <div class="cat-title">路線狀況反應</div>
-        <div class="cat-sub">施工路段、容易塞車的時間與地點、希望改道的建議</div>
+        <div class="cat-sub">施工路段、容易塞車的時間與地點、雨天備案建議ㄉ</div>
       </div>
       <div class="cat-radio"></div>
     </div>
@@ -558,7 +558,7 @@ animation: spin 0.8s linear infinite;
       <div class="cat-emoji">💡</div>
       <div class="cat-text">
         <div class="cat-title">其他問題或建議</div>
-        <div class="cat-sub">排班安排、任何讓整體更好的想法</div>
+       <div class="cat-sub">任何讓整體更好的想法</div>  
       </div>
       <div class="cat-radio"></div>
     </div>
@@ -686,11 +686,11 @@ animation: spin 0.8s linear infinite;
     el.classList.add('selected');
     selectedCatName = name;
     const placeholders = {
-      '路線狀況反應': '例如：XX路段每天早上8點很塞，建議可以改走...',
-      '乘客狀況反應': '例如：今天有乘客攜帶大型行李，擋住了走道...',
-      '設備問題反映': '例如：第三站播報器播到第四站的內容，需要更新...',
+      '路線狀況反應': '例如：下班時間右轉左楠路要等10分鐘以上，建議可以改走...',
+      '乘客狀況反應': '例如：07:30有乘客把早餐垃圾留在車上...',
+      '設備問題反映': '例如：抵達臨辦時的播報不準確...',
       '駕駛心情分享': '今天辛苦了，有什麼想說的都可以放這裡...',
-      '其他問題或建議': '例如：建議可以調整某個班次的發車時間，因為...'
+      '其他問題或建議': '例如：10:00左右捷運站排隊很多人載不完...'
     };
     document.getElementById('mainText').placeholder = placeholders[name] || '請輸入內容...';
     document.getElementById('step2Label').textContent = 'Step 3 · ' + name;
